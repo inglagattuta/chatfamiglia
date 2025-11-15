@@ -134,6 +134,20 @@ function App() {
       }
     }
   };
+import { getMessaging, getToken } from "firebase/messaging";
+import { messaging } from "./firebase"; // Se lo esporti dal file firebase.js
+
+const requestNotificationPermission = async () => {
+  if ("Notification" in window) {
+    const permission = await Notification.requestPermission();
+    setNotificationsEnabled(permission === "granted");
+    if (permission === "granted") {
+      const token = await getToken(messaging, { vapidKey: "BHxZ_FoGoLNLbF9A84f4-2ygWWtE9I3OPjp0cNY7236DutFGOvmYOnXcKqWqWx8_cleV18kpIoSbhNtIePkcT8g" });
+      // Salva il token su Firestore per l'utente (lo userai dal backend per inviare notifiche)
+      alert("Token push: " + token);
+    }
+  }
+};
 
   // Notifiche browser (facoltativo)
   const requestNotificationPermission = async () => {
