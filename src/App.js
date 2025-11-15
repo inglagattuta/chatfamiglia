@@ -2,7 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { MessageCircle, Send, Users, Bell, BellOff, LogOut, UserPlus, Home } from "lucide-react";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { collection, addDoc, query, where, onSnapshot, updateDoc, doc, getDoc, arrayUnion } from "firebase/firestore";
+import { getMessaging, getToken } from "firebase/messaging";
 import { auth, db } from "./firebase";
+
+// (Solo se hai esportato messaging da firebase.js, altrimenti crea qui)
+const messaging = getMessaging();
+
 
 function App() {
   const [user, setUser] = useState(null);
