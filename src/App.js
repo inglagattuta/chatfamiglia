@@ -116,6 +116,19 @@ function App() {
       }
     }
   };
+import { getMessaging, getToken } from "firebase/messaging";
+import { messaging } from "./firebase";
+
+const requestNotificationPermission = async () => {
+  if ("Notification" in window) {
+    const permission = await Notification.requestPermission();
+    setNotificationsEnabled(permission === "granted");
+    if (permission === "granted") {
+      const token = await getToken(messaging, { vapidKey: "BHxZ_FoGoLNLbF9A84f4-2ygWWtE9I3OPjp0cNY7236DutFGOvmYOnXcKqWqWx8_cleV18kpIoSbhNtIePkcT8g" });
+      alert("Notifiche attivate! (Token FCM: " + token + ")");
+    }
+  }
+};
 
   // Invia messaggio nella chat
   const handleSendMessage = async () => {
