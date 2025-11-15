@@ -5,9 +5,8 @@ import { collection, addDoc, query, where, onSnapshot, updateDoc, doc, getDoc, a
 import { getMessaging, getToken } from "firebase/messaging";
 import { auth, db } from "./firebase";
 
-// (Solo se hai esportato messaging da firebase.js, altrimenti crea qui)
+// Messaging per notifiche push
 const messaging = getMessaging();
-
 
 function App() {
   const [user, setUser] = useState(null);
@@ -121,19 +120,6 @@ function App() {
       }
     }
   };
-import { getMessaging, getToken } from "firebase/messaging";
-import { messaging } from "./firebase";
-
-const requestNotificationPermission = async () => {
-  if ("Notification" in window) {
-    const permission = await Notification.requestPermission();
-    setNotificationsEnabled(permission === "granted");
-    if (permission === "granted") {
-      const token = await getToken(messaging, { vapidKey: "BHxZ_FoGoLNLbF9A84f4-2ygWWtE9I3OPjp0cNY7236DutFGOvmYOnXcKqWqWx8_cleV18kpIoSbhNtIePkcT8g" });
-      alert("Notifiche attivate! (Token FCM: " + token + ")");
-    }
-  }
-};
 
   // Invia messaggio nella chat
   const handleSendMessage = async () => {
@@ -152,26 +138,16 @@ const requestNotificationPermission = async () => {
       }
     }
   };
-import { getMessaging, getToken } from "firebase/messaging";
-import { messaging } from "./firebase"; // Se lo esporti dal file firebase.js
 
-const requestNotificationPermission = async () => {
-  if ("Notification" in window) {
-    const permission = await Notification.requestPermission();
-    setNotificationsEnabled(permission === "granted");
-    if (permission === "granted") {
-      const token = await getToken(messaging, { vapidKey: "BHxZ_FoGoLNLbF9A84f4-2ygWWtE9I3OPjp0cNY7236DutFGOvmYOnXcKqWqWx8_cleV18kpIoSbhNtIePkcT8g" });
-      // Salva il token su Firestore per l'utente (lo userai dal backend per inviare notifiche)
-      alert("Token push: " + token);
-    }
-  }
-};
-
-  // Notifiche browser (facoltativo)
+  // Notifiche browser (Web Push Firebase)
   const requestNotificationPermission = async () => {
     if ("Notification" in window) {
       const permission = await Notification.requestPermission();
       setNotificationsEnabled(permission === "granted");
+      if (permission === "granted") {
+        const token = await getToken(messaging, { vapidKey: "BHxZ_FoGoLNLbF9A84f4-2ygWWtE9I3OPjp0cNY7236DutFGOvmYOnXcKqWqWx8_cleV18kpIoSbhNtIePkcT8g" });
+        alert("Notifiche attivate! Token FCM: " + token); // Copia questo token per i test push da Firebase Console
+      }
     }
   };
 
@@ -237,7 +213,6 @@ const requestNotificationPermission = async () => {
             </button>
             <button
               onClick={() => {
-                // Unico click: se sei già su "signup" e i dati sono compilati, registri, altrimenti mostra il campo nome
                 if (screen === "signup" && name && email && password) {
                   handleSignUp();
                 } else {
