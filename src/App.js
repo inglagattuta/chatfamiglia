@@ -2,10 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { MessageCircle, Send, Users, Bell, BellOff, LogOut, UserPlus, Home } from "lucide-react";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { collection, addDoc, query, where, onSnapshot, updateDoc, doc, getDoc, arrayUnion } from "firebase/firestore";
-import { auth, db } from "./firebase"; // Assicurati che firebase.js esista!
-  
+import { auth, db } from "./firebase";
+
 function App() {
-  // Stati principali
   const [user, setUser] = useState(null);
   const [screen, setScreen] = useState("login");
   const [email, setEmail] = useState("");
@@ -19,7 +18,6 @@ function App() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Controllo login iniziale
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((u) => {
       if (u) {
@@ -30,7 +28,6 @@ function App() {
     return unsubscribe;
   }, []);
 
-  // Aggiorna messaggi in tempo reale
   useEffect(() => {
     if (currentFamily) {
       const q = query(collection(db, "messages"), where("familyId", "==", currentFamily.id));
@@ -104,7 +101,6 @@ function App() {
         const familyDocRef = doc(db, "families", familyId);
         const familySnap = await getDoc(familyDocRef);
         if (familySnap.exists()) {
-          // Aggiorna membri solo se non già presente
           if (!familySnap.data().members.includes(auth.currentUser.uid)) {
             await updateDoc(familyDocRef, {
               members: arrayUnion(auth.currentUser.uid)
@@ -139,7 +135,7 @@ function App() {
     }
   };
 
-  // Notifiche browser
+  // Notifiche browser (facoltativo)
   const requestNotificationPermission = async () => {
     if ("Notification" in window) {
       const permission = await Notification.requestPermission();
@@ -208,7 +204,14 @@ function App() {
               Accedi
             </button>
             <button
-              onClick={() => setScreen("signup")}
+              onClick={() => {
+                // Unico click: se sei già su "signup" e i dati sono compilati, registri, altrimenti mostra il campo nome
+                if (screen === "signup" && name && email && password) {
+                  handleSignUp();
+                } else {
+                  setScreen("signup");
+                }
+              }}
               className="w-full bg-white text-indigo-600 py-3 rounded-lg font-medium border-2 border-indigo-600 hover:bg-indigo-50 transition"
             >
               Registrati
@@ -320,7 +323,6 @@ function App() {
           </div>
         </div>
       </div>
-
       <div className="flex-1 overflow-y-auto p-4">
         <div className="max-w-4xl mx-auto space-y-4">
           {messages.length === 0 ? (
@@ -353,7 +355,6 @@ function App() {
           <div ref={messagesEndRef} />
         </div>
       </div>
-
       <div className="bg-white border-t border-gray-200 p-4">
         <div className="max-w-4xl mx-auto flex gap-2">
           <input
